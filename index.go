@@ -50,22 +50,25 @@ func tampilanManager() {
 }
 
 func tambahData(k *tabData, nData *int) {
-	for *nData < 4 {
-
-		fmt.Scan(
-			&(*k)[*nData].pemilik.nama,
-			&(*k)[*nData].pemilik.alamat,
-			&(*k)[*nData].pemilik.nomorTelepon,
-		)
-
-		fmt.Scan(
-			&(*k)[*nData].kendaraan.platNomor,
-			&(*k)[*nData].kendaraan.tahunProduksi,
-		)
-
-		*nData = *nData + 1
+	var tambah string
+	tambah = "y"
+	for *nData < NMAX && tambah == "y" {
+			fmt.Scan(
+				&(*k)[*nData].pemilik.nama,
+				&(*k)[*nData].pemilik.alamat,
+				&(*k)[*nData].pemilik.nomorTelepon,
+			)
+	
+			fmt.Scan(
+				&(*k)[*nData].kendaraan.platNomor,
+				&(*k)[*nData].kendaraan.tahunProduksi,
+			)
+	
+			*nData = *nData + 1
+			fmt.Scan(&tambah)
+		}
 	}
-}
+
 
 func hapusDataKendaraan(k *tabData, nData *int) {
 	var index int
@@ -92,7 +95,7 @@ func ubahDataKendaraan(k *tabData, nData int) {
 
 	fmt.Scan(&index)
 
-	if index > nData || index <= 0 {
+	if index <= 0 || index >= nData {
 		fmt.Println("Index tidak ditemukan!")
 	} else {
 
@@ -115,7 +118,7 @@ func ubahDataPemilik(k *tabData, nData int) {
 
 	fmt.Scan(&index)
 
-	if index > nData || index <= 0 {
+	if index <= 0 || index >= nData {
 		fmt.Println("Index tidak ditemukan!")
 	} else {
 
@@ -139,10 +142,17 @@ func tambahDataRiwayat(k *tabData, nData int) {
 
 	fmt.Scan(&index)
 
-	fmt.Scan(
-		&(*k)[index].riwayatServis.jenisKerusakan,
-		&(*k)[index].riwayatServis.tanggalPerbaikan,
-	)
+	if index <= 0 || index >= nData {
+
+		fmt.Println("Index tidak ditemukan!")
+
+	} else {
+
+		fmt.Scan(
+			&(*k)[index].riwayatServis.jenisKerusakan,
+			&(*k)[index].riwayatServis.tanggalPerbaikan,
+		)
+	}
 }
 
 func sequence(k tabData, nData int) {
@@ -223,14 +233,17 @@ func binary(k tabData, nData int) {
 	var left, right, mid int
 	var platNomor string
 	var found bool
+	urutanData(&k, nData)
 
 	fmt.Scan(&platNomor)
 
 	left = 1
 	right = nData - 1
 	found = false
+	
+	
 
-	for left <= right {
+	for left <= right && found == false {
 
 		mid = (left + right) / 2
 
@@ -245,9 +258,7 @@ func binary(k tabData, nData int) {
 
 			left = right + 1
 
-		} else if platNomor <
-			k[mid].kendaraan.platNomor {
-
+		} else if platNomor < k[mid].kendaraan.platNomor {
 			right = mid - 1
 
 		} else {
@@ -256,7 +267,7 @@ func binary(k tabData, nData int) {
 		}
 	}
 
-	if !found {
+	if found == false {
 		fmt.Println("Data tidak ditemukan!")
 	}
 }
