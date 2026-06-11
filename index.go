@@ -2,6 +2,7 @@ package main
 import("fmt")
 
 const NMAX int = 10000
+const NMAXSERVIS int = 999
 
 
 type dataKendaraan struct {
@@ -22,8 +23,9 @@ type dataPemilik struct {
 
 type data struct {
 	kendaraan     dataKendaraan
-	pemilik       dataPemilik
-	riwayatServis dataRiwayatServis
+    pemilik       dataPemilik
+    riwayatServis [NMAXSERVIS]dataRiwayatServis
+    nServis       int
 }
 
 type tabData [NMAX]data
@@ -136,6 +138,7 @@ func tambahData(k *tabData, nData *int) {
 func hapusDataKendaraan(k *tabData, nData *int) {
 	var index int
 
+	fmt.Print("Masukan index yang ingin dihapus: ")
 	fmt.Scan(&index)
 	index = index - 1
 
@@ -158,6 +161,7 @@ func ubahDataKendaraan(k *tabData, nData int) {
 	var platNomorBaru string
 	var tahunProduksiBaru int
 
+	fmt.Print("Masukan index: ")
 	fmt.Scan(&index)
 	index = index - 1
 
@@ -171,6 +175,7 @@ func ubahDataKendaraan(k *tabData, nData int) {
 			(*k)[index].kendaraan.tahunProduksi,
 		)
 
+		fmt.Print("Masukan data baru (Plat, Tahun plat nomor berakhir): ")
 		fmt.Scan(&platNomorBaru, &tahunProduksiBaru)
 
 		(*k)[index].kendaraan.platNomor = platNomorBaru
@@ -182,6 +187,7 @@ func ubahDataPemilik(k *tabData, nData int) {
 	var index int
 	var namaBaru, alamatBaru, nomorTeleponBaru string
 
+	fmt.Print("Masukan index yang ingin diubah: ")
 	fmt.Scan(&index)
 	index = index - 1
 
@@ -196,6 +202,7 @@ func ubahDataPemilik(k *tabData, nData int) {
 			(*k)[index].pemilik.nomorTelepon,
 		)
 
+		fmt.Print("Masukan data baru (Nama, Alamat, No telp): ")
 		fmt.Scan(&namaBaru, &alamatBaru, &nomorTeleponBaru)
 
 		(*k)[index].pemilik.nama = namaBaru
@@ -205,18 +212,21 @@ func ubahDataPemilik(k *tabData, nData int) {
 }
 
 func tambahDataRiwayat(k *tabData, nData int) {
-	var index int
+	var index, n int
 
+	fmt.Print("Masukan index: ")
 	fmt.Scan(&index)
 	index = index - 1
 
 	if index >= nData || index < 0 {
-        fmt.Println("Index tidak ditemukan!")
+        fmt.Println("Index diluar batas!")
     } else {
+		n = (*k)[index].nServis
         fmt.Scan(
-            &(*k)[index].riwayatServis.jenisKerusakan,
-            &(*k)[index].riwayatServis.tanggalPerbaikan,
+            &(*k)[index].riwayatServis[n].jenisKerusakan,
+            &(*k)[index].riwayatServis[n].tanggalPerbaikan,
         )
+		(*k)[index].nServis++
     }
 }
 
@@ -374,7 +384,7 @@ func tanggalInsertion(k *tabData, nData int) {
 		temp = (*k)[pass]
 		i = pass - 1
 
-		for i >= 0 && temp.riwayatServis.tanggalPerbaikan < (*k)[i].riwayatServis.tanggalPerbaikan {
+		for i >= 0 && temp.nServis < (*k)[i].nServis {
 
 			(*k)[i+1] = (*k)[i]
 			i--
@@ -387,7 +397,7 @@ func tanggalInsertion(k *tabData, nData int) {
 }
 
 func tampilkanStatistik(k tabData, nData int) {
-	var i, j, maxCount, bulan int
+	var i, j, s, maxCount, bulan int
     var modusKerusakan string
     var arrKerusakan [NMAX]string
     var arrCount [NMAX]int
@@ -395,24 +405,27 @@ func tampilkanStatistik(k tabData, nData int) {
 	var n int
 
 	for i = 0; i < nData; i++ {
-        bulan = (k[i].riwayatServis.tanggalPerbaikan / 100) % 100
-        if bulan >= 1 && bulan <= 12 {
-            countBulan[bulan]++
-        }
+		for s = 0; s < k[i].nServis; s++ {
+			bulan = (k[i].riwayatServis[s].tanggalPerbaikan / 100) % 100
+			if bulan >= 1 && bulan <= 12 {
+				countBulan[bulan]++
+			}
 
-        var found bool = false
-        for j = 0; j < n && !found; j++ {
-            if arrKerusakan[j] == k[i].riwayatServis.jenisKerusakan {
-                arrCount[j]++
-                found = true
-            }
-        }
-        if !found {
-            arrKerusakan[n] = k[i].riwayatServis.jenisKerusakan
-            arrCount[n] = 1
-            n++
-        }
-    }
+			var found bool = false
+			for j = 0; j < n && !found; j++ {
+				if arrKerusakan[j] == k[i].riwayatServis[s].jenisKerusakan {
+					arrCount[j]++
+					found = true
+				}
+			}
+			if !found {
+				arrKerusakan[n] = k[i].riwayatServis[s].jenisKerusakan
+				arrCount[n] = 1
+				n++
+			}
+		}
+	}
+
 
     fmt.Println("--- Statistik Kendaraan per Bulan ---")
     for i = 1; i <= 12; i++ {
