@@ -85,8 +85,8 @@ func tampilanManager(k *tabData, nData *int) {
 		fmt.Println("====================================================")
 		fmt.Println("||        === MENU MANAGER OPERASIONAL ===        ||")
 		fmt.Println("====================================================")
-		fmt.Println("1. Sequential Search Plat Nomor                    |")
-		fmt.Println("2. Binary Search Plat Nomor                        |")
+		fmt.Println("1. Cari Data Pemilik Berdasarkan Nama              |")
+		fmt.Println("2. Cari Riwayat Servis Berdasarkan Tanggal         |")
 		fmt.Println("3. Selection Sort Tahun Produksi                   |")
 		fmt.Println("4. Insertion Sort Tanggal Servis                   |")
 		fmt.Println("5. Statistik                                       |")
@@ -99,7 +99,7 @@ func tampilanManager(k *tabData, nData *int) {
 			sequence(*k, *nData)
 
 		} else if pilihan == 2 {
-			urutanData(k, *nData)
+			tanggalInsertion(k, *nData)
 			binary(*k, *nData)
 
 		} else if pilihan == 3 {
@@ -272,55 +272,28 @@ func tambahDataRiwayat(k *tabData, nData int) {
 
 func sequence(k tabData, nData int) {
 	var index int
-	var platNomor string
+	var nama string
 	var found bool
 
-	fmt.Print("Masukan plat nomor yang dicari: ")
-	fmt.Scan(&platNomor)
+	fmt.Print("Masukan nama pemilik yang dicari: ")
+	fmt.Scan(&nama)
 
 	found = false
 
-	for index = 0; index < nData && !found; index++ {
-		if platNomor == k[index].kendaraan.platNomor {
-			fmt.Println("Data ditemukan:")
-			fmt.Print(index+1, " ")
-			fmt.Println(
-				k[index].kendaraan.platNomor,
-				k[index].kendaraan.tahunProduksi,
-			)
+	fmt.Println("=== DATA PEMILIK ===")
+
+	for index = 0; index < nData; index++ {
+		if nama == k[index].pemilik.nama {
+			fmt.Println("Nama Pemilik:", k[index].pemilik.nama)
+			fmt.Println("Alamat:", k[index].pemilik.alamat)
+			fmt.Println("Nomor Telepon:", k[index].pemilik.nomorTelepon)
 
 			found = true
 		}
 	}
 
-	if !found {
-		fmt.Println("Data tidak ditemukan!")
-	}
-}
-
-func urutanData(k *tabData, nData int) {
-	var i, idx, pass int
-	var temp data
-
-	pass = 1
-
-	for pass < nData {
-		idx = pass - 1
-		i = pass
-
-		for i < nData {
-			if (*k)[i].kendaraan.platNomor < (*k)[idx].kendaraan.platNomor {
-				idx = i
-			}
-
-			i = i + 1
-		}
-
-		temp = (*k)[pass-1]
-		(*k)[pass-1] = (*k)[idx]
-		(*k)[idx] = temp
-
-		pass = pass + 1
+	if found == false {
+		fmt.Println("Data pemilik tidak ditemukan!")
 	}
 }
 
@@ -355,44 +328,6 @@ func tampilan(k tabData, nData int) {
 				}
 			}
 		}
-	}
-}
-
-func binary(k tabData, nData int) {
-	var left, right, mid int
-	var platNomor string
-	var found bool
-
-	fmt.Print("Masukan plat nomor yang dicari: ")
-	fmt.Scan(&platNomor)
-
-	left = 0
-	right = nData - 1
-	found = false
-
-	for left <= right && !found {
-		mid = (left + right) / 2
-
-		if platNomor == k[mid].kendaraan.platNomor {
-			fmt.Println("Data ditemukan:")
-			fmt.Print(mid+1, " ")
-			fmt.Println(
-				k[mid].kendaraan.platNomor,
-				k[mid].kendaraan.tahunProduksi,
-			)
-
-			found = true
-
-		} else if platNomor < k[mid].kendaraan.platNomor {
-			right = mid - 1
-
-		} else {
-			left = mid + 1
-		}
-	}
-
-	if !found {
-		fmt.Println("Data tidak ditemukan!")
 	}
 }
 
@@ -461,6 +396,50 @@ func tanggalInsertion(k *tabData, nData int) {
 	fmt.Println("Data berhasil diurutkan berdasarkan tanggal servis terakhir.")
 }
 
+func binary(k tabData, nData int) {
+	var left, right, mid int
+	var tanggal int
+	var found bool
+	var i int
+
+	fmt.Print("Masukan tanggal servis yang dicari, contoh 20260526: ")
+	fmt.Scan(&tanggal)
+
+	left = 0
+	right = nData - 1
+	found = false
+
+	fmt.Println("=== RIWAYAT SERVIS KENDARAAN ===")
+
+	for left <= right && found == false {
+		mid = (left + right) / 2
+
+		if tanggal == tanggalTerakhir(k[mid]) {
+			fmt.Println("Tanggal Servis:", tanggalTerakhir(k[mid]))
+			fmt.Println("Plat Nomor:", k[mid].kendaraan.platNomor)
+			fmt.Println("Tahun Produksi:", k[mid].kendaraan.tahunProduksi)
+
+			for i = 0; i < k[mid].nServis; i++ {
+				if k[mid].riwayatServis[i].tanggalPerbaikan == tanggal {
+					fmt.Println("Jenis Kerusakan:", k[mid].riwayatServis[i].jenisKerusakan)
+				}
+			}
+
+			found = true
+
+		} else if tanggal < tanggalTerakhir(k[mid]) {
+			right = mid - 1
+
+		} else {
+			left = mid + 1
+		}
+	}
+
+	if found == false {
+		fmt.Println("Riwayat servis tidak ditemukan!")
+	}
+}
+
 func tampilkanStatistik(k tabData, nData int) {
 	var i, j, s, maxCount, bulan int
 	var modusKerusakan string
@@ -479,14 +458,14 @@ func tampilkanStatistik(k tabData, nData int) {
 			}
 
 			found = false
-			for j = 0; j < n && !found; j++ {
+			for j = 0; j < n && found == false; j++ {
 				if arrKerusakan[j] == k[i].riwayatServis[s].jenisKerusakan {
 					arrCount[j] = arrCount[j] + 1
 					found = true
 				}
 			}
 
-			if !found {
+			if found == false {
 				arrKerusakan[n] = k[i].riwayatServis[s].jenisKerusakan
 				arrCount[n] = 1
 				n = n + 1
