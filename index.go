@@ -197,7 +197,7 @@ func ubahDataKendaraan(k *tabData, nData int) {
 		fmt.Print("Masukan plat nomor baru: ")
 		fmt.Scan(&platNomorBaru)
 
-		fmt.Print("Masukan tahun produksi baru: ")
+		fmt.Print("Masukan tahun produksi baru: ") //ini buat ubah tahun produksi kalau misalny ada  salah input sebelumnya misal w205 harusnya 2015 tapi input sbelumnya 2014 -alvin
 		fmt.Scan(&tahunProduksiBaru)
 
 		(*k)[index].kendaraan.platNomor = platNomorBaru
