@@ -383,7 +383,7 @@ func tanggalInsertion(k *tabData, nData int) {
 		temp = (*k)[pass]
 		i = pass - 1
 
-		for i >= 0 && tanggalTerakhir(temp) < tanggalTerakhir((*k)[i]) {
+		for i >= 0 && tanggalTerakhir(temp) > tanggalTerakhir((*k)[i]) {
 			(*k)[i+1] = (*k)[i]
 			i = i - 1
 		}
