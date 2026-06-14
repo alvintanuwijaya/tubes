@@ -85,7 +85,7 @@ func tampilanManager(k *tabData, nData *int) {
 		fmt.Println("====================================================")
 		fmt.Println("||        === MENU MANAGER OPERASIONAL ===        ||")
 		fmt.Println("====================================================")
-		fmt.Println("1. Cari Data Pemilik Berdasarkan Nama              |")
+		fmt.Println("1. Cari Data Kendaraan Berdasarkan Plat Nomor      |")
 		fmt.Println("2. Cari Riwayat Servis Berdasarkan Tanggal         |")
 		fmt.Println("3. Selection Sort Tahun Produksi                   |")
 		fmt.Println("4. Insertion Sort Tanggal Servis                   |")
@@ -99,7 +99,7 @@ func tampilanManager(k *tabData, nData *int) {
 			sequence(*k, *nData)
 
 		} else if pilihan == 2 {
-			tanggalInsertion(k, *nData)
+			urutanData(k, *nData)
 			binary(*k, *nData)
 
 		} else if pilihan == 3 {
@@ -272,28 +272,32 @@ func tambahDataRiwayat(k *tabData, nData int) {
 
 func sequence(k tabData, nData int) {
 	var index int
-	var nama string
+	var platNomor string
 	var found bool
 
-	fmt.Print("Masukan nama pemilik yang dicari: ")
-	fmt.Scan(&nama)
+	fmt.Print("Masukan plat nomor yang dicari: ")
+	fmt.Scan(&platNomor)
 
 	found = false
 
-	fmt.Println("=== DATA PEMILIK ===")
+	fmt.Println("=== DATA KENDARAAN BERDASARKAN PLAT NOMOR ===")
 
 	for index = 0; index < nData; index++ {
-		if nama == k[index].pemilik.nama {
+		if platNomor == k[index].kendaraan.platNomor {
+			fmt.Println("Data ditemukan:")
+			fmt.Println("Index:", index+1)
 			fmt.Println("Nama Pemilik:", k[index].pemilik.nama)
 			fmt.Println("Alamat:", k[index].pemilik.alamat)
 			fmt.Println("Nomor Telepon:", k[index].pemilik.nomorTelepon)
+			fmt.Println("Plat Nomor:", k[index].kendaraan.platNomor)
+			fmt.Println("Tahun Produksi:", k[index].kendaraan.tahunProduksi)
 
 			found = true
 		}
 	}
 
 	if found == false {
-		fmt.Println("Data pemilik tidak ditemukan!")
+		fmt.Println("Data kendaraan tidak ditemukan!")
 	}
 }
 
@@ -398,36 +402,33 @@ func tanggalInsertion(k *tabData, nData int) {
 
 func binary(k tabData, nData int) {
 	var left, right, mid int
-	var tanggal int
+	var platNomor string
 	var found bool
-	var i int
 
-	fmt.Print("Masukan tanggal servis yang dicari, contoh 20260526: ")
-	fmt.Scan(&tanggal)
+	fmt.Print("Masukan plat nomor yang dicari: ")
+	fmt.Scan(&platNomor)
 
 	left = 0
 	right = nData - 1
 	found = false
 
-	fmt.Println("=== RIWAYAT SERVIS KENDARAAN ===")
+	fmt.Println("=== BINARY SEARCH BERDASARKAN PLAT NOMOR ===")
 
 	for left <= right && found == false {
 		mid = (left + right) / 2
 
-		if tanggal == tanggalTerakhir(k[mid]) {
-			fmt.Println("Tanggal Servis:", tanggalTerakhir(k[mid]))
+		if platNomor == k[mid].kendaraan.platNomor {
+			fmt.Println("Data ditemukan:")
+			fmt.Println("Index:", mid+1)
+			fmt.Println("Nama Pemilik:", k[mid].pemilik.nama)
+			fmt.Println("Alamat:", k[mid].pemilik.alamat)
+			fmt.Println("Nomor Telepon:", k[mid].pemilik.nomorTelepon)
 			fmt.Println("Plat Nomor:", k[mid].kendaraan.platNomor)
 			fmt.Println("Tahun Produksi:", k[mid].kendaraan.tahunProduksi)
 
-			for i = 0; i < k[mid].nServis; i++ {
-				if k[mid].riwayatServis[i].tanggalPerbaikan == tanggal {
-					fmt.Println("Jenis Kerusakan:", k[mid].riwayatServis[i].jenisKerusakan)
-				}
-			}
-
 			found = true
 
-		} else if tanggal < tanggalTerakhir(k[mid]) {
+		} else if platNomor < k[mid].kendaraan.platNomor {
 			right = mid - 1
 
 		} else {
@@ -436,7 +437,7 @@ func binary(k tabData, nData int) {
 	}
 
 	if found == false {
-		fmt.Println("Riwayat servis tidak ditemukan!")
+		fmt.Println("Data kendaraan tidak ditemukan!")
 	}
 }
 
